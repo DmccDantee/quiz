@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotik Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .option-button {
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .option-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    .progress-bar {
+      transition: width 0.5s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 flex justify-center items-center min-h-screen p-4">
+  <div id="root"></div>
+
+  <!-- React and Babel -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.5/babel.min.js"></script>
+
+  <script type="text/babel">
+    // Questions array
+    const questions = [
+      {
+        id: 1,
+        question: "Aşağıdaki seçeneklerden hangisi robotların üretim maliyetlerinin düşmesi karşılaştırmasına dahil edilemez?",
+        options: [
+          "A. Bir robot, üretimdeki etkinliğinden dolayı kurulum maliyetini kısa zamanda amorti eder.",
+          "B. Dikkatsizlik ve yorgunluk sonucu oluşacak hatalar ortadan kalktığı için toplam kalitede artış sağlar.",
+          "C. Robotun birim zamandaki işçilik maliyeti \\( \\frac{1}{4} \\) oranında bir işçiye göre çok daha düşüktür.",
+          "D. Robotlarda konumlanma doğruluğu insana göre çok yüksektir. Günümüzde \\( 0.003 \\mathrm{~cm} \\) doğruluğa, \\( 0.001 \\mathrm{~cm} \\) tekrarlanabilirliğe ulaşabilirler.",
+          "E. Zamanların \\% 98'inde randımanlıdırlar. Kahve, yemek molası ve insani ihtiyaçlar için ara vermezler."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 2,
+        question: "Robotiğin babası olarak bilinen 1942 yılında 3 Robot kuralını yazmıştır. Boşluğa gelmesi gereken şık hangisidir?",
+        options: [
+          "A. Isaac Asimov",
+          "B. El-Cezeri",
+          "C. Leonardo Da Vinci",
+          "D. Jacques de Vaucanson",
+          "E. Henri Maillardet"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 3,
+        question: "Hangisi robotlar için doğru bir sınıflandırma başlığı değildir?",
+        options: [
+          "A. Hareket Durumuna Göre Robotlar",
+          "B. Yeteneklerine Göre Robotlar",
+          "C. Kontrol Yöntemlerine Göre Robotlar",
+          "D. Piyasa Değerine Göre Robotlar",
+          "E. Güç Kaynaklarına Göre Robotlar"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 4,
+        question: "İki Harf Kodlu Sınıflandırma türünde robotlar, sadece iki harf ile kodlanarak sınıflandırılır. Verilen harf açıklamalarından hangisi doğrudur?",
+        options: [
+          "A. N : Dönme Eksenine Dik Dönme",
+          "B. N : Kayma Eksenine Paralel Dönme",
+          "C. S : Dönme Eksenine Dik Dönme",
+          "D. C : Kayma",
+          "E. C : Dönme Eksenine Dik Dönme veya Dönme Eksenine Paralel Dönme"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 5,
+        question: "Kontrol etmek istediğimiz sistemin olmasını istediğimiz ve kontrol sistemine girdi olarak verdiğimiz değere denir. Kontrol edilen sistemden elde edilen giriş cinsinden ölçüm değerine denir. Bu iki değer arasında meydana gelen farka denir. Boşluklara gelmesi gereken ifadeler hangi şıkta doğru sırayla verilmiştir?",
+        options: [
+          "A. Set Değeri (SV) - Proses Değeri (PV) - Hata (Error)",
+          "B. Hata (Error) - Proses Değeri (PV) - Set Değeri (SV)",
+          "C. Set Değeri (SV) - Hata (Error) - Proses Değeri (PV)",
+          "D. Proses Değeri (PV) - Set Değeri (SV) - Hata (Error)",
+          "E. Hata (Error) - Set Değeri (SV) - Proses Değeri (PV)"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 6,
+        question: "Hangi seçenek On-Off kontrol sistemi için yanlıştır?",
+        options: [
+          "A. Proses değeri, set değerinden aşağıda olursa sisteme çıkış verilir.",
+          "B. En basit kapalı çevrim kontrol sistemidir.",
+          "C. Proses değeri, set değerine ulaştığında çıkış kapatılır.",
+          "D. On-Off kontrol tipinin dezavantajı, ilk anda çok yüksek aşımlar yapması ve oturma zamanının uzun zaman almasıdır.",
+          "E. Proses değeri hiçbir zaman set değerine sabit duramaz, set değeri altına ve üstüne doğru sürekli salınım yapar."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 7,
+        question: "Mekanik Mikro-Switch için aşağıdakilerden hangisi yanlıştır?",
+        options: [
+          "A. Robotun ya da robot kolun bir cisme oldukça yakınlaştığını hatta temas ettiğini saptamasını sağlar.",
+          "B. Bir cismi tutabilir ya da çarpmayı önlemek için durabilir.",
+          "C. Normal konumda, C ile NC uçları kısa devre ve C ile NO uçları açık devredir. Kola mekanik baskı olduğunda kontaklar konum değiştirerek, C ile NO kısa devre olur, C ile NC açık devre olur.",
+          "D. Robotlarda, tekerleğin bir kenarına mıknatıs yapıştırarak o tekerleğin kaç tur döndüğünü saymak amacıyla kullanılabilmektedir.",
+          "E. Fiziksel olarak temas etmesi dezavantajdır ve bu temas çok yakın mesafede gerçekleştiği için ani tepki verilmesine neden olabilmektedir."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 8,
+        question: "- Orman yangınlarını tespit eden bir robot, ya da otomatik söndürme robotlarında kullanılabilir.\n- Bir robot, dış ortamın karanlık ya da aydınlık olduğunu bu şekilde algılayabilir. Gece olduğunda fark edilmek için uyarı ışıklarını yakabilir.\n- Dış ortamda gezen mobil bir robot, ıslanmaktan kaçınmak için kapalı bir mekâna sığınabilir.\nKullanım alanları için örnek verilen sensörlerin doğru sıralaması hangi seçenekte verilmiştir?",
+        options: [
+          "A. Cıvalı Sensör - Endüktif Yaklaşım Sensörü - IR Hareket Sensörü",
+          "B. Yağmur/Islaklık Sensörü - Açık/Koyu Algılayan Sensörler - Renk Sensörü",
+          "C. Ateş/Alev Sensörleri - Işık Sensörleri - Yağmur/Islaklık Sensörü",
+          "D. Endüktif Yaklaşım Sensörü - Açık/Koyu Algılayan Sensörler - Yağmur/Islaklık Sensörü",
+          "E. Cisim Algılama Sensörleri - Kuvvet Sensörleri - Pusula (Compass) Sensörü"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 9,
+        question: "DC motorlar, düşük devirlerde, üzerinden geçen akım da düşük olduğundan dolayı döndürme momentleri oldukça zayıftır ve bu halde bir tekerleği döndüremez, robotu ilerletemezler. Bunun için ......... denilen, bir çeşit arabalardaki vites kutusuna karşılık gelen dişli sistemi kullanılır. Boşluğa aşağıdakilerden hangisi gelmelidir?",
+        options: [
+          "A. PWM",
+          "B. Redüktör",
+          "C. Piezoelektrik kristal",
+          "D. Step motor",
+          "E. Elektroaktif polimer"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 10,
+        question: "Piezo-Electric için aşağıda verilen seçeneklerden hangisi yanlıştır?",
+        options: [
+          "A. Elektrik sinyallerine, şekil değiştirerek tepki veren bir çeşit polimerdir.",
+          "B. Kristal yapıdaki bu madde, potansiyel elektrik gerilimi altında şekil değiştirir. Ya da tersine şekli değiştirildiğinde, uçlarında gerilim üretir.",
+          "C. Günlük hayatımızdaki en bariz örneği, manyetolu çakmaklardır.",
+          "D. Uçlarına uygulanan yüksek frekanslı kare dalga, kristalin bu frekansta titreşmesini sağlar.",
+          "E. Piezo kristalin uzama - kısalma etkisi kullanılarak piezoelektrik motorlar ve doğrusal hareket aktüatörleri üretilmiştir."
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 11,
+        question: "I. Elektronik devrelerin ve aktüatörlerin elektrik enerjisi ile çalışması nedeniyle mobil robotlarda elektrik enerjisi kullanılır. Elektrik enerjisi ayrıca, depolanabilir ve taşınabilir bir enerjidir.\nII. Elektrik enerjisinin depolanması günümüzde kimyasal yollarla yapılmaktadır.\nIII. Kimyasal reaksiyon sonucu elektrik akımı meydana gelmektedir.\nYukarıdaki ifadelerden hangileri doğrudur?",
+        options: [
+          "A. Yalnız I",
+          "B. Yalnız III",
+          "C. I ve II",
+          "D. II ve III",
+          "E. Hepsi"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 12,
+        question: "Pilleri bağlayarak artırabiliriz ancak her bir pilinki ile aynıdır. Boşluklara sırasıyla hangi kelimeler gelmelidir?",
+        options: [
+          "A. seri - gerilimi - kapasite",
+          "B. seri - kapasiteyi - gerilim",
+          "C. paralel - gerilimi - kapasite",
+          "D. paralel - kapasiteyi - kapasite",
+          "E. seri - gerilimi - gerilim"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 13,
+        question: "Aşağıdakilerden hangisi Arduino kullanımının avantajlarından değildir?",
+        options: [
+          "A. 10 dakika içinde ilk uygulama gerçekleştirilebilir.",
+          "B. Alt seviye mikroişlemci bilgisi gerektirmez.",
+          "C. Yazılımların kaynak kodlarına erişimi serbest değildir ve üzerlerinde istenildiği gibi değişiklik yapılmasını engeller.",
+          "D. Zengin kütüphane desteği vardır.",
+          "E. İnteraktif sistem tasarlamak için idealdir."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 14,
+        question: "I. Delay(gecikme) fonksiyonu ile programlarımızda gecikmeler oluşturabiliriz.\nII. setup() fonksiyonu içerisinde 'bir çok kez' gerçekleştireceğimiz işlemler yer alır.\nIII. loop() fonksiyonu içerisindeki işlemler sürekli tekrarlanır.\nArduino programlama için yukarıda verilen ifadelerden hangileri doğrudur?",
+        options: [
+          "A. Yalnız II",
+          "B. I ve III",
+          "C. II ve III",
+          "D. I ve II",
+          "E. Hepsi"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 15,
+        question: ".............. bütün program boyunca tanımlıdırlar, yok edilmezler. Boş bırakılan yere aşağıdaki ifadelerden hangisi gelmelidir?",
+        options: [
+          "A. Global değişkenler",
+          "B. Otomatik değişkenler",
+          "C. Yerel Değişkenler",
+          "D. Harici Değişkenler",
+          "E. Belirli Değişkenler"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 16,
+        question: "Hangisi Arduino programlama için yanlıştır?",
+        options: [
+          "A. Döngü içerisindeyken break ifadesi bulunuyorsa döngüden çıkılır.",
+          "B. Break ifadesini belirli bir şart oluştuğunda döngüyü sonlandırmak için kullanabiliriz.",
+          "C. Fonksiyonların parametre almaları ve değer döndürmeleri zorunludur.",
+          "D. Döngü içerisindeyken continue ifadesinden sonraki işlemler atlanarak döngü tekrar başa döndürülür.",
+          "E. Continue ifadesini döngüdeyken istisnai durumlar oluşturmak için kullanabiliriz."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 17,
+        question: "Aşağıdakilerden hangisi robotu tanımlarken kullanılan ifade yanlıştır?",
+        options: [
+          "A. Programlanabilen yapısı vardır.",
+          "B. Otonom ya da yarı-otonom harekete sahiptir.",
+          "C. Hiçbir şekilde insanoğluna zarar vermemesidir.",
+          "D. Yapılacak işe göre taşıyan veya işleyen çok fonksiyonlu makinedir.",
+          "E. Genellikle elektro-mekanik bir makinedir."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 18,
+        question: "Robotların tercih edilmesini somut bir şekilde açıklamanın tek yolu robotları, işini devralacakları işçiler ile karşılaştırmaktır. Buna göre aşağıdakilerden hangisine göre karşılaştıramayız?",
+        options: [
+          "A. Satış miktarlarındaki artış",
+          "B. Üretim maliyetlerinin düşmesi",
+          "C. Kalitede artış",
+          "D. Üretim artışı",
+          "E. Tehlikeli ortamlarda çalışma"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 19,
+        question: "'Robotlarda etik ve doğası gereği işleri yapmakta ustadırlar. İşlerde işçilerin çalıştırılarak işçilerin robotlaşması yerine, bu işlerde robotların çalışıp işçilerin insansı işlere kaydırılması daha akla yatkındır.' cümlesinin boşluklarına ne gelmelidir?",
+        options: [
+          "A. Güç gerektiren",
+          "B. Hassas",
+          "C. Zor",
+          "D. Tehlikeli",
+          "E. Rutin ve tekdüze"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 20,
+        question: "Aşağıdakilerden hangisi 18. yüzyıl öncesi robotların genel özelliklerindendir?",
+        options: [
+          "A. İçten yanmalı motor sistemleriyle çalışırlar.",
+          "B. Evlerde yoğunlukla kullanılırlar.",
+          "C. Dönemin sorunlarına çözüm amacıyla üretilirler.",
+          "D. Mekanik olarak karmaşık yapıları vardır.",
+          "E. Çoğunlukla görüntü, şov amacıyla üretilirler."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 21,
+        question: "Aşağıdaki bilim adamlarından hangisi robotiğin babası lakabıyla tanınır?",
+        options: [
+          "A. Nikola Tesla",
+          "B. Albert Einstein",
+          "C. Alan Turing",
+          "D. Louis Pasteur",
+          "E. Isaac Asimov"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 22,
+        question: "Aşağıdakilerden hangisi Endüstriyel Robot türündendir?",
+        options: [
+          "A. Hasat robotu",
+          "B. Gözlem robotu",
+          "C. Yangın söndürme robotu",
+          "D. Teşhise yardımcı robot",
+          "E. Montaj robotu"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 23,
+        question: "Aşağıdakilerden hangisi güç kaynaklarına göre robotlar arasında yer almaz?",
+        options: [
+          "A. Elektrik motorlar",
+          "B. Servo/Step motorlar",
+          "C. Pnömatik robotlar",
+          "D. Hidrolik robotlar",
+          "E. Playback robotlar"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 24,
+        question: "Robot kontrol yapılarında oluşan hataların hesaplama formülü aşağıdakilerden hangisidir?",
+        options: [
+          "A. Oransal değer - Integral değeri",
+          "B. Oransal değer + Integral değeri + Derivative değer",
+          "C. Proses değeri + Set değeri",
+          "D. Proses değeri / Set değeri",
+          "E. Proses değeri - Set değeri"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 25,
+        question: "Aşağıdaki robot kontrol sistemlerinden hangisi diğerlerine oranla daha az maliyetlidir?",
+        options: [
+          "A. Fuzzy Logic (Bulanık Mantık) Kontrol",
+          "B. PI Kontrol",
+          "C. Artificial Intelligence (Yapay Zeka) ile Kontrol",
+          "D. PID Kontrol",
+          "E. On-Off Kontrol"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 26,
+        question: "Aşağıdaki sensör çiftlerinden hangisi dronelar için en çok kullanılan sensörlerdir?",
+        options: [
+          "A. Işık Sensörü - Renk Sensörü",
+          "B. Açık - Koyu Algılayan Sensörler",
+          "C. Reed Röle - Hall Effect Sensörü",
+          "D. IR Hareket Sensörü - Endüktif Yaklaşım Sensörü",
+          "E. İvme (Accelerometer) - Jiroskop (Gyroscope)"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 27,
+        question: "Aşağıdakilerden hangisi performans tanımlayıcılarından olan Hysteresis Hata'nın tanımıdır?",
+        options: [
+          "A. Girişe bağlı çıkıştaki hata sonucu.",
+          "B. Ölçülemeyen çıkış değerinde giriş oranı.",
+          "C. Çıkış adımları, girişteki en küçük ölçülebilir değişiklik.",
+          "D. Sabit giriş sırasındaki çıkıştaki sapma.",
+          "E. Giriş değerinin artması ve azalmasına bağlı çıkış değeri."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 28,
+        question: "Step motorlarda kaç adet bağlantı ucu vardır?",
+        options: [
+          "A. 6",
+          "B. 5",
+          "C. 2",
+          "D. 4",
+          "E. 3"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 29,
+        question: "Aşağıdakilerden hangisi Nitinol Alaşım’ın özelliklerinden biri değildir?",
+        options: [
+          "A. Bir tele kontrollü bir şekilde elektrik akımı verilerek telin uzaması kontrol edilebilir.",
+          "B. Cisimlerin sıcaklıkla genleşmesi prensibine dayanır.",
+          "C. Soğukken şekli değiştirildikten sonra, ısıtıldığında orijinal şekline geri döner.",
+          "D. Uzama ve kısalma etkisi, mekanik bağlantılarla açısal harekete dönüştürülebilir.",
+          "E. Potansiyel elektrik gerilimi altında şekli değişir."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 30,
+        question: "'Pilleri seri bağlayarak .... artırabiliriz.' Boş bırakılan kısıma aşağıdaki seçeneklerden hangisi yerleştirilmelidir?",
+        options: [
+          "A. kaliteyi",
+          "B. hızı",
+          "C. akımı",
+          "D. kapasiteyi",
+          "E. gerilimi"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 31,
+        question: "\\%75 Kapasitede çalışırken 2,55 A akım çeken bir robot, aralıklarla 30 dakika (0,5 Saat) çalışmalıdır. Robotun çalışması için gereken pil kapasitesi kaç mAh'dir?",
+        options: [
+          "A. 300 mAh",
+          "B. 1100 mAh",
+          "C. 1920 mAh",
+          "D. 2550 mAh",
+          "E. 1275 mAh"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 32,
+        question: "Aşağıdakilerden hangisi giyilebilir teknolojilerde kullanılabilecek Arduino modeline örnek olarak verilebilir?",
+        options: [
+          "A. Due",
+          "B. Mega ADK",
+          "C. Mega",
+          "D. Uno",
+          "E. Lilypad"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 33,
+        question: "Arduino tasarımları yapmak için aşağıdakilerden hangisini bir gereklilik değildir?",
+        options: [
+          "A. Elektronik bilmek",
+          "B. Devre kurmayı bilmek",
+          "C. Breadboard kullanmayı bilmek",
+          "D. Analog ve dijital elektronik bilmek",
+          "E. Design Patterns bilmek"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 34,
+        question: "Arduino kodlama dilinde kullanılan 'delay(60);' kod satırı hangi işlemi yapar?",
+        options: [
+          "A. 1 saniye bekletir",
+          "B. 1 salise bekletir",
+          "C. 1 dakika bekletir",
+          "D. 60 dakika bekletir",
+          "E. 60 milisaniye bekletir"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 35,
+        question: "Arduino kodlama dilinde 'continue' ifadesi hangi işlemi yapar?",
+        options: [
+          "A. Stop durumundan çıkmayı sağlar.",
+          "B. Programı alt satıra dallandırır.",
+          "C. Delay işleminin devam etmesini sağlar.",
+          "D. Döngüden çıkarır.",
+          "E. Döngü içerisinde sonraki işlemler atlatıp bir sonraki iterasyona geçirir."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 36,
+        question: "Sadece yazılımdan oluşan robotlara ne denir?",
+        options: [
+          "A. ReBot",
+          "B. Sanal Robot",
+          "C. Bot",
+          "D. Robota",
+          "E. Robocob"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 37,
+        question: "Robot kelimesini ilk kullanan kişi kimdir?",
+        options: [
+          "A. Isaac Asimov",
+          "B. Honda",
+          "C. Karel Capek",
+          "D. El Cezeri",
+          "E. Leonardo Da Vinci"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 38,
+        question: "Aşağıda verilen robot türlerinden hangisi Endüstriyel robotlar arasında gösterilir?",
+        options: [
+          "A. Protezler",
+          "B. Gözlem Robotları",
+          "C. İmha Robotları",
+          "D. Hasat Robotları",
+          "E. Montaj Robotları"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 39,
+        question: "Aşağıdakilerden hangisi Tarım Endüstrisi'ne hizmet eden robotlardan değildir?",
+        options: [
+          "A. Hasat robotları",
+          "B. Ürün sınıflandırma sistemleri",
+          "C. Kalite denetleme sistemleri",
+          "D. Tarım ürünlerini işleme robot ve makineleri",
+          "E. Gözlem robotları"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 40,
+        question: "Kontrol etmek istediğimiz sistemin olmasını istediğimiz ve kontrol sistemine girdi olarak verdiğimiz değere ne denir?",
+        options: [
+          "A. Set Değeri",
+          "B. Proses Değeri",
+          "C. Error",
+          "D. Açık Çevrim",
+          "E. Kapalı Çevrim"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 41,
+        question: "Bu kontrol tipinde çalışan çoğu aktüatör, sık açıp kapanmaya uygun olmayıp ömürleri kısa sürede tükenir. Bunu önlemek için, On-Off Kontrol tipi sistemlere ne eklenmiştir?",
+        options: [
+          "A. Set Değeri",
+          "B. Anahtar",
+          "C. Sensör",
+          "D. Histerisiz",
+          "E. Proses Değeri"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 42,
+        question: "Sensörle ilgili aşağıda verilenlerden hangisi yanlıştır?",
+        options: [
+          "A. Sensörler, robotun çevresini algılamasını ve buna göre tepki vermesini sağlayan devrelerdir.",
+          "B. Sensörler, fiziksel büyüklükleri elektriksel sinyallere çeviren elektronik devrelerdir.",
+          "C. Bu sinyaller robot kontrol birimi tarafından okunarak değerlendirilir.",
+          "D. Fiziksel ortam değişikliklerini algılayan cihazlardır.",
+          "E. Sensörler kontrol sistemlerinin hacim değerlerini algılamasını sağlayan elemanlardır."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 43,
+        question: "Transdüser nedir?",
+        options: [
+          "A. Bir enerji formunu diğer bir enerji formuna çeviren yapılardır.",
+          "B. Endüstride kullanılan bir robot çeşididir.",
+          "C. Tarımda kullanılan bir robot çeşididir.",
+          "D. Eğitimde kullanılan bir robot çeşididir.",
+          "E. Yazılımsal bir robotdur."
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 44,
+        question: "Aşağıda verilenlerden hangisi bir robotta kullanılan elektrikle çalışan aktüatörlerden değildir?",
+        options: [
+          "A. Selonoid",
+          "B. Nitinol",
+          "C. Piezoelektrik Kristal",
+          "D. Elektroaktif Polimerler",
+          "E. Mıknatıs"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 45,
+        question: "Bir DC Motorun devir hızını kontrol etmek için üzerinden geçen akımı, dolayısıyla uçlarına uyguladığımız gerilimi kontrol ederiz, bunun için ne kullanılır?",
+        options: [
+          "A. PWM (Pulse Width Modulation)",
+          "B. Step motor",
+          "C. H Köprüsü",
+          "D. Mikro denetleyici",
+          "E. Güç kaynağı"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 46,
+        question: "Bir pilde kullanılan kimyasal maddeler neyi belirler?",
+        options: [
+          "A. Bu pilin tekrar şarj olup olamayacağını.",
+          "B. Kimyasını",
+          "C. Çeşidini",
+          "D. Yapısını",
+          "E. Malzemesini"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 47,
+        question: "\\( 2000 \\mathrm{mAh} (2 \\mathrm{Ah}) \\) kapasiteye sahip bir pil için verilenlerden hangisi doğrudur?",
+        options: [
+          "A. 1 saat boyunca 2,0 A akım verebilir",
+          "B. 2 saat boyunca 1,0 A akım verebilir",
+          "C. 30 dakika boyunca 4,0 A akım verebilir",
+          "D. 15 dakika boyunca 8,0 A akım verebilir",
+          "E. 4 saat boyunca 0,5 A akım verebilir"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 48,
+        question: "Aşağıda verilen kod ve açıklamalarından hangisi yanlış verilmiştir?",
+        options: [
+          "A. digitalWrite(13, HIGH); //LED'i Yak",
+          "B. delay(1000); //Bir saniye bekle",
+          "C. digitalWrite(13, LOW); //LED'i Söndür",
+          "D. loop() //İçerisindeki işlemler sürekli tekrarlanır",
+          "E. pinMode(13, OUTPUT); //13 numaralı pin dijital giriş olarak ayarlanıyor."
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 49,
+        question: "Arduino'da programı derlemek için hangi butona tıklanır?",
+        options: [
+          "A. Run",
+          "B. Run-debug",
+          "C. Verify",
+          "D. Debug",
+          "E. Build"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 50,
+        question: "Aşağıda Arduino ile ilgili verilenlerden hangisi yanlıştır?",
+        options: [
+          "A. Arduino temel olarak Processing programlama diline dayanıyor.",
+          "B. Söz dizimi (sentaks) olarak Python/Javascript dillerine benzer.",
+          "C. Satır sonlarında noktalı virgül (;) bulunuyor.",
+          "D. Bloklar süslü parantezlerle {} tanımlanıyor.",
+          "E. // veya /* */ karakterleri ile yorumlar yazılabilir."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 51,
+        question: "Arduino'da main() fonksiyonu yerine ne kullanılır?",
+        options: [
+          "A. setup() ve loop()",
+          "B. delay()",
+          "C. setup()",
+          "D. loop()",
+          "E. void()"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 52,
+        question: "Robotlar ve insanların karşılaştırılmasında hangisi yanlıştır?",
+        options: [
+          "A. Robotlar, insan hayatını tehlikeye atmadan kolaylıkla çalışabilir.",
+          "B. Robotun birim zamandaki işçilik maliyeti bir işçiye göre daha düşüktür.",
+          "C. İnsanların konumlama doğruluğu ve işleri standart şekilde devam ettirme yeteneği robotlardan düşüktür.",
+          "D. İnsanlar doğası gereği rutin ve tek düze işleri yapmakta ustadır.",
+          "E. Robotlar çok daha hızlı iş üretebilirler."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 53,
+        question: "Fiziksel yapıdaki robotlar, ....... olarak isimlendirilirken, sadece yazılımdan oluşan robotlara ... denir. Boşluklara sırasıyla hangi kelimeler gelmelidir?",
+        options: [
+          "A. robot - robo",
+          "B. robot - robot",
+          "C. robot - bot",
+          "D. bot - robot",
+          "E. otomat - robot"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 54,
+        question: "Küresel robotların, SCARA robotlara karşı avantajlı olmasının sebebi nedir?",
+        options: [
+          "A. Küresel robotlarda 2 dönel, 1 prizmatik eklem bulunması.",
+          "B. Küresel robotların çalışma uzayının bombelenmiş olması.",
+          "C. SCARA robotlarda çalışma uzayının üç boyutlu olmaması.",
+          "D. SCARA robotlarda 2 dönel, 1 prizmatik eklem bulunması.",
+          "E. SCARA robotların çalışma uzayının bombelenmiş olması."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 55,
+        question: "İki harf kodlu sınıflandırma türünde robotlar sadece iki harf göstererek sınıflandırılır. İlk harf 1. eklemin özelliği ve 2. ekleme göre nasıl döndüğünü, ikinci harf 3. eklemi ve 2. eklem ile 3. eklem arasındaki ilişkiyi verir. Buna göre aşağıdaki eşleştirmelerden hangisi yanlıştır?",
+        options: [
+          "A. SN-PRR",
+          "B. CS-RPP",
+          "C. NR-RRR",
+          "D. RR-RPR",
+          "E. SC-PPP"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 56,
+        question: "Bir makinenin kontrolünü sağlayan karar sistemleri Açık Çevrim Kontrol Sistemleri ve Kapalı Çevrim Kontrol sistemleri olarak ikiye ayrılır. Buna göre Kapalı Çevrim Kontrol Sistemleriyle ilgili bilgilerden hangisi yanlıştır?",
+        options: [
+          "A. Sistem her zaman hatayı 0 yapmaya çalışır. Hata 'Hata=Proses Değeri-Set Değeri' formülüyle bulunur.",
+          "B. On-Off kontrolde proses değeri hiçbir zaman set değerine sabit duramaz, set değeri altına ve üstüne sürekli salınım yapar.",
+          "C. PI(oransal+integral) kontrol tipi, set değerine çok hızlı ulaşmak ve meydana gelecek hataları da minimuma düşürmek için tasarlanmış.",
+          "D. P(oransal) kontrol tipinde çoğu zaman proses değeri set değeri ile çakışır.",
+          "E. PID(oransal+integral+türev) kontrol tipinde proses değeri en kısa sürede en az aşımla set değerine oturur."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 57,
+        question: "Robotlarda ve insanda kontrol sistemleri bulunmaktadır. Buna göre verilen bilgilerden hangisi yanlıştır?",
+        options: [
+          "A. Kontrol yapılarının benzerliğinden, robotlarda hep insan silueti aranmıştır.",
+          "B. İnsanda ve robotta da hedef belirlenmeli ve bu hedefin algılanması sağlanmalı, sonraki aşama karar aşaması olmalı, karar da verildikten sonra verilen bu karara uygun tepki verilmelidir.",
+          "C. İnsanlarda kontrol sürecinde tepki aşaması duyu organlarıyla yapılmaktadır.",
+          "D. Robotlarda kontrol sürecinde algılama aşaması sensörler tarafından gerçekleştirilebilir.",
+          "E. Kontrol anlam olarak, bir işin usulüne uygun yapılıp yapılmadığını doğrulamak demektir."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 58,
+        question: "Giriş büyüklüklerine göre sensörler 5’e ayrılır. Bu sensör tanımlamalarından hangisi doğru değildir?",
+        options: [
+          "A. Uzunluk, alan, kütlesel akış, kuvvet, moment, basınç, hız, ivme, pozisyon, ses, dalga boyu ve yoğunluğu gibi değişiklikleri algılayan sensörler mekaniksel sensörlerdir.",
+          "B. Yoğunluk, dalgaboyu, polarizasyon, faz, yansıtma ve gönderme gibi değişiklikleri algılayan sensörler fiziksel sensörlerdir.",
+          "C. Alan yoğunluğu, akım yoğunluğu, manyetik moment gibi manyetik değişiklikleri algılayan sensörler manyetik sensörlerdir.",
+          "D. Sıcaklık, ısı akışı gibi termal değişiklikleri algılayan sensörler termal sensörlerdir.",
+          "E. Voltaj, akım, direnç, endüktans, kapasitans, dielektrik katsayısı, polarizasyon, elektrik alanı gibi elektriksel değişiklikleri algılayan sensörler elektriksel sensörlerdir."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 59,
+        question: "Sıcaklık ölçümü için çok sayıda farklı sensörler üretilmiştir. Bu sensörlerden birinde aynı zamanda nem sensörü de entegre edilmiştir. Bu sayede hem sıcaklığı hem nemi ölçebilir. Aşağıdakilerden hangisi anlatılan sensördür?",
+        options: [
+          "A. PTC",
+          "B. NTC",
+          "C. DS18B20",
+          "D. Reed Röle",
+          "E. DHT11"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 60,
+        question: "Cisimlerin genleşmesi prensibine dayalı olan mekanizma aşağıdakilerden hangisidir?",
+        options: [
+          "A. Selonoid Aktüatörler",
+          "B. Redüktörlü DC motor",
+          "C. Nitinol alaşım",
+          "D. Step motorlar",
+          "E. PWM"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 61,
+        question: "Robot aktüatörler ile ilgili verilen bilgilerden hangisi yanlıştır?",
+        options: [
+          "A. EAP’s elektrik sinyallerine, şekil değiştirerek tepki veren bir çeşit polimerdir.",
+          "B. Step motorların dezavantajı motor duruyor olsa bile sürekli enerji harcar ve ısı üretir.",
+          "C. Servo motorlarında geri besleme elemanı olarak, çıkış miline bağlı bir potansiyometre kullanılmaktadır.",
+          "D. Piezo kristalleri tek yönlüdür. Elektrik sinyallerini titreşime çevirir.",
+          "E. Bir mekanik hareketi başlatmak, durdurmak, kilitlemek ya da çözmek için, robotlarda bir malzemeyi tutmak ya da bırakmak için kullanılan mekanizmaya hareket sağlamak amacıyla kullanılabilir."
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 62,
+        question: "Bir pilde kullanılan kimyasal maddeler, bu pilin tekrar şarj olup olamayacağını belirler. Aşağıda verilen hücre kimyasallarıyla ilgili hangisi doğrudur?",
+        options: [
+          "A. Kurşun-Asitten yapılan piller şarj edilemez.",
+          "B. Lityumdan yapılan piller şarj edilebilir.",
+          "C. Lityum-Polimerden yapılan piller şarj edilemez.",
+          "D. Çinko-Karbondan yapılan piller şarj edilebilir.",
+          "E. Nikel-Kadmiyumdan yapılan piller şarj edilemez."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 63,
+        question: "Piller ile ilgili verilenlerden hangisi yanlıştır?",
+        options: [
+          "A. Pilleri seri bağlayarak gerilimi artırabiliriz.",
+          "B. Pilleri seri bağlayarak kapasiteyi artırabiliriz.",
+          "C. Gerilim değerini belirleyen ana faktör, kullandığımız aktüatörler yani motorlardır.",
+          "D. 4 adet seri bağlı 1,5 V pil, 6 V gerilim sağlar.",
+          "E. 1 adet 2 hücreli Li-Po pil, 7,4 V gerilim sağlar."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 64,
+        question: "void setup() {\n    pinMode(13, OUTPUT);\n}\nvoid loop() {\n    digitalWrite(13, HIGH); // 1)\n    delay(1000); // 2)\n    digitalWrite(13, LOW); // 3)\n    delay(1000); // 4)\n}\nYukarıda verilen program ile ilgili aşağıda verilen bilgilerden hangisi yanlış?",
+        options: [
+          "A. 1 numaralı kod satırında LED yakma işlemi uygulanır.",
+          "B. 2 ve 4 numaralı kod satırında 1 saniye bekleme aracı uygulanır.",
+          "C. setup() fonksiyonu içerisinde yazdığımız işlemler birden fazla kez çalıştırılabilir.",
+          "D. loop() fonksiyonu içindeki işlemler sürekli tekrarlanır.",
+          "E. 3 numaralı kod satırında LED söndürme işlemi uygulanır."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 65,
+        question: "Arduino geliştirme ortamı ile ilgili verilen bilgilerden hangisi yanlıştır?",
+        options: [
+          "A. Arduino sadece Windows platformlarında çalışır.",
+          "B. Geliştirme ortamı standart kelime işlemci özelliklere sahiptir.",
+          "C. Hem programlarımızı yazma hem de derleyip kartımıza yükleme işlemlerini gerçekleştirebiliyoruz.",
+          "D. Geliştirme ortamı herhangi bir kurulum gerektirmeden zip dosyasından açılarak çalıştırılabilir.",
+          "E. Hazır bulunan kütüphaneler sayesinde donanım seviyesine inmeye gerek yok."
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 66,
+        question: "Arduino programlamanın kullanımıyla ilgili verilen bilgilerden hangisi doğrudur?",
+        options: [
+          "A. delay() fonksiyonu ile sürekli çalışan işlemler oluşturuluyor.",
+          "B. Global değişkenler fonksiyonların dışında, yerel değişkenler fonksiyonların içinde tanımlanır.",
+          "C. Büyük küçük harf duyarlı değildir.",
+          "D. Döngü içerisindeyken continue ifadesi bulunuyorsa döngüden çıkılır.",
+          "E. Döngü içerisindeyken break ifadesinden sonraki işlemler atlanarak döngü tekrar başa döndürülür."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 67,
+        question: "Arduino dilinde kullanılan matematiksel fonksiyonlar vardır. Buna göre hangi fonksiyon en küçük tam sayıya yuvarlama işlemini yapar?",
+        options: [
+          "A. sqrt()",
+          "B. abs()",
+          "C. pow()",
+          "D. ceil()",
+          "E. constrain()"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 68,
+        question: "Robotlar genellikle hangi enerji türü kullanarak yapılmıştır?",
+        options: [
+          "A. Kimyasal Enerji",
+          "B. Manyetik Enerji",
+          "C. Elektrik Enerjisi",
+          "D. Ses Enerjisi",
+          "E. Dalga Enerjisi"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 69,
+        question: "Aşağıdakilerden hangisi robotların tercih edilme sebeplerinden biri değildir?",
+        options: [
+          "A. Üretim maliyetini düşürmesi",
+          "B. Üretimde artışı sağlaması",
+          "C. Kalitede artışı sağlaması",
+          "D. Tehlikeli ortamlarda insan hayatını tehlikeye atmadan çalışabilmesi",
+          "E. İnsanlardan daha iyi düşünmesi"
+        ],
+        correctAnswer: "E"
+      },
+      {
+        id: 70,
+        question: "Aşağıdakilerden hangisi endüstriyel robotlardan değildir?",
+        options: [
+          "A. Montaj Robotları",
+          "B. Kaynak Robotları",
+          "C. Boyama Robotları",
+          "D. İmha Robotları",
+          "E. Malzeme Taşıma Robotları"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 71,
+        question: "Aşağıdakilerden hangisi yeteneklerine göre robotlardan değildir?",
+        options: [
+          "A. Hidrolik Robotlar",
+          "B. Ardaşı Kontrollü Robotlar",
+          "C. Adaptif Robotlar",
+          "D. Zeki Robotlar",
+          "E. Playback Robotlar"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 72,
+        question: "'Kontrol etmek istediğimiz sistemin olmasını istediğimiz ve kontrol sistemine uygun olarak verdiğimiz değere denir.' Cümlesinin boşluklarına ne gelmelidir?",
+        options: [
+          "A. Proses Değeri (PV)",
+          "B. Hata (Error)",
+          "C. Set Değeri (SV)",
+          "D. Kontrol",
+          "E. Eşik Değer"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 73,
+        question: "On-Off Kontrol tipi sık açılıp kapanmaya uygun olmadığı için ömrü kısa sürede tükenmektedir. Buna göre bunu önlemek için aşağıdaki sistemlerden hangisi eklenmiştir?",
+        options: [
+          "A. Geri Besleme",
+          "B. Histerisiz (Gecikme)",
+          "C. Proses Değeri (PV)",
+          "D. Hata (Error)",
+          "E. Hiçbiri"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 74,
+        question: "Aşağıdakilerden hangisi giriş büyüklüklerine göre sensör çeşitlerinden değildir?",
+        options: [
+          "A. Mekanik Sensörler",
+          "B. Elektriksel Sensörler",
+          "C. Isıl Sensörler",
+          "D. Manyetik Sensörler",
+          "E. Termal Sensörler"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 75,
+        question: "Aşağıdakilerden hangisi sensör ölçme ilgili temel kavramlardan tekrar tekrar ölçmede aynı sonucu verebilmesini gerektiren özelliktir?",
+        options: [
+          "A. Doğruluk",
+          "B. Duyarlılık",
+          "C. Çözünürlük",
+          "D. Dayanıklılık",
+          "E. Hassaslık"
+        ],
+        correctAnswer: "A"
+      }
+    ];
+
+    // Quiz App Component
+    function QuizApp() {
+      const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+      const [selectedAnswer, setSelectedAnswer] = React.useState(null);
+      const [score, setScore] = React.useState({ correct: 0, incorrect: 0 });
+      const [showResult, setShowResult] = React.useState(false);
+
+      // Error handling for missing questions
+      if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        console.error("Questions array is not defined or empty!");
+        return (
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 className="text-xl font-bold text-red-600">Hata</h2>
+            <p className="text-red-500 mt-2">Soru verisi yüklenemedi. Lütfen konsolu kontrol edin.</p>
+          </div>
+        );
+      }
+
+      const handleAnswerClick = (option) => {
+        if (selectedAnswer) return; // Prevent multiple selections
+        setSelectedAnswer(option);
+
+        if (option.startsWith(questions[currentQuestionIndex].correctAnswer)) {
+          setScore({ ...score, correct: score.correct + 1 });
+        } else {
+          setScore({ ...score, incorrect: score.incorrect + 1 });
+        }
+      };
+
+      const handleNext = () => {
+        setSelectedAnswer(null);
+        if (currentQuestionIndex + 1 < questions.length) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+          setShowResult(true);
+        }
+      };
+
+      const resetQuiz = () => {
+        if (!window.confirm("Testi yeniden başlatmak istediğinize emin misiniz?")) return;
+        setCurrentQuestionIndex(0);
+        setSelectedAnswer(null);
+        setScore({ correct: 0, incorrect: 0 });
+        setShowResult(false);
+      };
+
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+
+      if (showResult) {
+        return (
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl max-w-lg w-full mx-auto fade-in">
+            <h1 className="text-3xl font-bold text-blue-800 mb-6 text-center">Test Sonuçları</h1>
+            <div className="text-lg space-y-3">
+              <p><span className="font-semibold">Toplam Çözülen Soru:</span> {score.correct + score.incorrect}</p>
+              <p><span className="font-semibold text-green-600">Doğru Cevaplar:</span> {score.correct}</p>
+              <p><span className="font-semibold text-red-600">Yanlış Cevaplar:</span> {score.incorrect}</p>
+            </div>
+            <button
+              onClick={resetQuiz}
+              className="mt-6 w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Testi Yeniden Başlat
+            </button>
+          </div>
+        );
+      }
+
+      const isCorrect = selectedAnswer && selectedAnswer.startsWith(questions[currentQuestionIndex].correctAnswer);
+      const correctOption = questions[currentQuestionIndex].options.find(
+        option => option.startsWith(questions[currentQuestionIndex].correctAnswer)
+      );
+
+      return (
+        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl max-w-lg w-full mx-auto fade-in">
+          <h1 className="text-2xl font-bold text-blue-800 mb-4">Robotik Quiz</h1>
+          <div className="mb-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-1">
+              <span>Soru {currentQuestionIndex + 1} / {questions.length}</span>
+              <span>Doğru: {score.correct} | Yanlış: {score.incorrect}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full progress-bar"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+          <p className="text-lg mb-6 text-gray-800" dangerouslySetInnerHTML={{ __html: questions[currentQuestionIndex].question }}></p>
+          <div className="space-y-2">
+            {questions[currentQuestionIndex].options.map((option, index) => {
+              const isSelected = selectedAnswer === option;
+              const isCorrectAnswer = option.startsWith(questions[currentQuestionIndex].correctAnswer);
+              let bgClass = 'bg-gray-100';
+              if (selectedAnswer) {
+                if (isSelected && !isCorrectAnswer) {
+                  bgClass = 'bg-red-100 text-red-600';
+                } else if (isCorrectAnswer) {
+                  bgClass = 'bg-green-100 text-green-600';
+                }
+              }
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerClick(option)}
+                  disabled={selectedAnswer !== null}
+                  className={`option-button block w-full p-3 rounded-md text-left ${bgClass} border border-gray-200 hover:bg-gray-200 ${selectedAnswer && 'cursor-not-allowed'} transition-colors duration-300`}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+          {selectedAnswer && (
+            <div className="mt-4">
+              <p className={`text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                {isCorrect
+                  ? 'Helal Laan  Sana  Yapıyon Bu işi !'
+                  : `Yanlış. Olmadı Kral Bizde Yanlışlık Yanlışıkla Olur: ${correctOption}`}
+              </p>
+              <button
+                onClick={handleNext}
+                className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                {currentQuestionIndex + 1 < questions.length ? 'Sonraki Soru' : 'Sonuçları Göster'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Render with error handling
+    try {
+      ReactDOM.render(<QuizApp />, document.getElementById('root'));
+    } catch (e) {
+      console.error('Rendering error:', e);
+      document.getElementById('root').innerHTML = `
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold text-red-600">Hata</h2>
+          <p className="text-red-500 mt-2">Uygulama yüklenemedi. Lütfen konsolu kontrol edin.</p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
