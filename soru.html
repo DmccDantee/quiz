@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teorik Bilgisayar Bilimi Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .option-button {
+      transition: all 0.3s ease;
+    }
+    .option-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+      transition: width 0.5s ease-in-out;
+    }
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .dark-mode {
+      background: linear-gradient(135deg, #1f2937, #111827);
+      color: white;
+    }
+    .dark-mode .card {
+      background: #1f2937;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    .dark-mode .option-button {
+      background: #374151;
+      color: white;
+      border-color: #4b5563;
+    }
+    .dark-mode .option-button:hover:not(:disabled) {
+      background: #4b5563;
+    }
+    .dark-mode .bg-gray-200 {
+      background: #4b5563;
+    }
+    .toggle-button {
+      transition: all 0.3s ease;
+    }
+    .toggle-button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-4">
+  <div id="root"></div>
+
+  <!-- React and Babel -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.5/babel.min.js"></script>
+
+  <script type="text/babel">
+    // Questions array (updated with PDF questions)
+    const questions = [
+      {
+        id: 1,
+        question: "Deterministik Sonlu Otomat (DFA) aşağıdakilerden hangisidir?",
+        options: [
+          "A. Sınırsız yığın belleği olan aygıt",
+          "B. Her an tek durumda bulunan, giriş sembolüne göre kesin geçiş yapan makine",
+          "C. Yığın belleği kullanan nondeterministik makine",
+          "D. Üretim kuralları kümesi",
+          "E. Sembolleri silip yazabilen sonsuz bantlı makine"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 2,
+        question: "DFA ile NFA'nın tanıyabildiği dil sınıfları için hangisi doğrudur?",
+        options: [
+          "A. DFA daha güçlüdür.",
+          "B. NFA daha güçlüdür.",
+          "C. İkisi de aynı düzenli dil sınıfını tanır.",
+          "D. Sadece \\(\\varepsilon\\)-dili ortak tanınır.",
+          "E. Yalnızca NFA tüm düzenli dilleri üretir."
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 3,
+        question: "\\(B=\\{0^n 1^n \\mid n \\geq 0\\}\\) dili hangi sınıfa aittir?",
+        options: [
+          "A. Düzenli",
+          "B. Düzenli olmayan (nonregular)",
+          "C. DFA ile kararlaştırılabilir",
+          "D. RegEx ile tanımlanabilir",
+          "E. Deterministik yığın otomatınca reddedilir"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 4,
+        question: "Düzenli diller için Pompalama Lemması'na göre \\(s=xyz\\) ayrımı yapıldığında hangi parça pompalanır?",
+        options: [
+          "A. \\(x\\)",
+          "B. \\(z\\)",
+          "C. \\(y\\)",
+          "D. \\(xy\\)",
+          "E. \\(yz\\)"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 5,
+        question: "Pompalama Lemması'nın garantilediği özel \\(p\\) değeri nasıl adlandırılır?",
+        options: [
+          "A. Döngü boyu",
+          "B. Geçiş uzunluğu",
+          "C. Pompalama uzunluğu (pumping length)",
+          "D. Kabul ölçütü",
+          "E. Kelime sınırı"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 6,
+        question: "Pompalama Lemması kanıtlarında \\(i=0\\) seçimiyle oluşturulan \\(xy^0z\\) işlemi hangi adla anılır?",
+        options: [
+          "A. Yukarı pompalama",
+          "B. Döngü açma",
+          "C. Aşağı pompalama (pumping down)",
+          "D. Döngü kısaltma",
+          "E. Simülasyon"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 7,
+        question: "\"İkili alfabe\" ifadesi \\(\\Sigma=\\{0,1\\}\\) örneğinde hangi kavramı tanımlar?",
+        options: [
+          "A. Dil",
+          "B. Dize",
+          "C. Alfabe",
+          "D. Kelime uzunluğu",
+          "E. Üretim kuralı"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 8,
+        question: "\\(|s|\\) gösterimi neyi belirtir?",
+        options: [
+          "A. Dizedeki farklı sembol sayısını",
+          "B. Makinenin durum sayısını",
+          "C. Dizenin uzunluğunu (sembol adedi)",
+          "D. Pompalama uzunluğunu",
+          "E. Yığındaki öğe sayısını"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 9,
+        question: "DFA'lar ile düzenli ifadeler arasındaki ilişki için hangisi doğrudur?",
+        options: [
+          "A. Sadece DFA'lar düzenli dilleri tanımlar.",
+          "B. DFA'lar ve düzenli ifadeler düzenli dil sınıfını eşdeğer biçimde tanımlar.",
+          "C. Düzenli ifadeler DFA'dan daha güçsüzdür.",
+          "D. DFA'lar yalnızca boş dili tanır.",
+          "E. Düzenli ifadeler nondeterministiktir."
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 10,
+        question: "Sonlu otomat şemasına yığın (stack) eklendiğinde hangi yeni makine modeli oluşur?",
+        options: [
+          "A. Turing makinesi",
+          "B. Lineer-bounded otomat",
+          "C. Pushdown otomat (PDA)",
+          "D. Çoklu kafa otomat",
+          "E. Deterministik sonlu otomat"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 11,
+        question: "Düzenli diller pompalama lemmalarında \\(i>1\\) seçilerek oluşturulan \\(xy^i z\\) için hangi terim kullanılır?",
+        options: [
+          "A. Pompalama aşağı",
+          "B. Kesikli pompalama",
+          "C. Yukarı pompalama (pumping up)",
+          "D. Kısmi döngü",
+          "E. Yansıma"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 12,
+        question: "Pompalama Lemması düzenli diller için koşuludur.",
+        options: [
+          "A. Yeterli ve gerekli",
+          "B. Gerekli fakat yeterli olmayan",
+          "C. Yalnızca yeterli",
+          "D. Geçersiz",
+          "E. Tanımsız"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 13,
+        question: "\\(s=xyz\\) ayrımında \\(|xy| \\leq p, |y|>0\\) kısıtları hangi lemmada yer alır?",
+        options: [
+          "A. CFG pompalama",
+          "B. Düzenli dil pompalama",
+          "C. Parse-tree cerrahisi",
+          "D. Context-sensitive lemma",
+          "E. Rice teoremi"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 14,
+        question: "\\(A_1=\\{0^n 1^n 2^n \\mid n \\geq 0\\}\\) dilinin düzenli olmadığı hangi yöntemle gösterilmiştir?",
+        options: [
+          "A. İndüksiyon",
+          "B. Pompalama lemmayla çelişki (proof by contradiction)",
+          "C. Myhill-Nerode",
+          "D. CFG tasarımı",
+          "E. PDA simülasyonu"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 15,
+        question: "Pompalama lemmayla düzenli olmadığını göstermek için ilk adım nedir?",
+        options: [
+          "A. Pompalama uzunluğunu sıfıra eşitlemek",
+          "B. Dilin düzenli olduğunu varsaymak",
+          "C. Yığın eklemek",
+          "D. Gramer kurmak",
+          "E. String uzunluğunu küçültmek"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 16,
+        question: "\\(\\{a^{2n} \\mid n \\geq 0\\}\\) dilinin düzenli olmadığını kanıtlamada kullanılan temel fikir hangisidir?",
+        options: [
+          "A. Kare kök alma",
+          "B. Pompalama sonucu kuvvetin bozulması",
+          "C. Yığın dengeleme",
+          "D. Parse tree değiştirme",
+          "E. Turing makinesi döngüsü"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 17,
+        question: "Pompalama lemmalarını kullanırken \\(i=0\\) seçimi hangi sonuca yol açar?",
+        options: [
+          "A. Daha uzun dize",
+          "B. Dizenin kısalması",
+          "C. Yığının taşması",
+          "D. Kabul durumuna zorla",
+          "E. Dil hiyerarşisi ihlali"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 18,
+        question: "\"Proof by contradiction\" yönteminde hangi adım atılır?",
+        options: [
+          "A. Önermeyi doğrudan ispat etmek",
+          "B. Tersini varsayıp çelişki üretmek",
+          "C. Yığın boşaltmak",
+          "D. Deterministik geçiş eklemek",
+          "E. \\(\\varepsilon\\)-geçişi kaldırmak"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 19,
+        question: "Düzenli dil pompalama lemması dilin düzenli olmadığını kanıtlamak için kullanılır.",
+        options: [
+          "A. Sadece bağlam-bağımsız",
+          "B. Turing tanınabilir",
+          "C. Aday düzenli olmayan (nonregular)",
+          "D. Deterministik",
+          "E. Kararlaştırılabilir"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 20,
+        question: "Pompalama uzunluğu \\(p\\)'den kısa tüm dizeler için lemma ne söyler?",
+        options: [
+          "A. Her zaman pompalanabilir",
+          "B. Garanti vermez (şart lemma dışında)",
+          "C. Kesinlikle reddedilir",
+          "D. DFA tarafından tanınmaz",
+          "E. NFA'ya dönüştürülür"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 21,
+        question: "Bir PDA'nın yığıta sembol ekleme işlemi nedir?",
+        options: [
+          "A. Pop",
+          "B. Swap",
+          "C. Push",
+          "D. Peek",
+          "E. Shift"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 22,
+        question: "PDA'nın yığıt erişimi hangi ilkeyle kısıtlıdır?",
+        options: [
+          "A. FIFO",
+          "B. Random access",
+          "C. LIFO (Last In First Out)",
+          "D. Çevrimsel",
+          "E. Çift yığın"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 23,
+        question: "Deterministik PDA (DPDA) ile Nondeterministik PDA (NPDA) gücü ilişkisi?",
+        options: [
+          "A. Eşit",
+          "B. DPDA daha güçlü",
+          "C. NPDA bazı ek dilleri tanır",
+          "D. NPDA daha zayıf",
+          "E. İkisi de yalnızca düzenli dili tanır"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 24,
+        question: "PDA'nın \\(\\{0^n 1^n\\}\\) dilini tanımasını sağlayan bellek yapısı nedir?",
+        options: [
+          "A. Sonsuz şerit",
+          "B. Çoklu kayıtlar",
+          "C. Yığın",
+          "D. FIFO kuyruk",
+          "E. İşaretleme bandı"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 25,
+        question: "Bağlam-bağımsız gramer (CFG) tanımlarken hangi unsur bulunmaz?",
+        options: [
+          "A. Değişken kümesi",
+          "B. Terminal kümesi",
+          "C. Başlangıç sembolü",
+          "D. Yığın alfabesi",
+          "E. Üretim kuralları"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 26,
+        question: "CFG-PDA eşdeğerliği neyi belirtir?",
+        options: [
+          "A. Her CFG'nin sadece DPDA'sı vardır",
+          "B. CFL \\(\\Leftrightarrow\\) PDA tarafından tanınan diller",
+          "C. CFG'ler düzenli dilleri üretir",
+          "D. PDA'lar decidable dilleri tanır",
+          "E. CFG'ler nondeterminizmi içermez"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 27,
+        question: "Bağlam-bağımsız diller, dil hiyerarşisinde hangi sınıfın hemen üstündedir?",
+        options: [
+          "A. Hesaplanabilir diller",
+          "B. Düzenli diller",
+          "C. Bağlam duyarlı diller",
+          "D. Tüm diller",
+          "E. Deterministik bağlam-bağımsız diller"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 28,
+        question: "Aşağıdakilerden hangisi bağlam-bağımsız dilin tipik örneğidir?",
+        options: [
+          "A. \\(\\{ww \\mid w \\in \\{0,1\\}\\}\\)",
+          "B. \\(\\{0^n 1^n \\mid n \\geq 0\\}\\)",
+          "C. \\(\\{a^n b^n c^n \\mid n \\geq 0\\}\\)",
+          "D. \\(\\{w \\# w \\mid w \\in \\{0,1\\}\\}\\)",
+          "E. Turing tanınabilir tüm diller"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 29,
+        question: "CFG'lerin programlama dillerindeki başlıca rolü nedir?",
+        options: [
+          "A. Bellek tahsisi",
+          "B. Ayrıştırma (parsing)",
+          "C. Çalışma zamanı bağlama",
+          "D. Kod optimizasyonu",
+          "E. Donanım soyutlaması"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 30,
+        question: "Bağlam-bağımsız diller için pompalama lemmada \\(s=uvxyz\\) ayrımında hangi parçalar birlikte pompalanır?",
+        options: [
+          "A. \\(u\\) ve \\(v\\)",
+          "B. \\(x\\) ve \\(z\\)",
+          "C. \\(y\\) ve \\(z\\)",
+          "D. \\(v\\) ve \\(y\\)",
+          "E. \\(u\\) ve \\(z\\)"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 31,
+        question: "\\(\\{a^n b^n c^n\\}\\) dilinin bağlam-bağımsız olmadığına gösteren temel sebep nedir?",
+        options: [
+          "A. DFA döngüsü",
+          "B. Pompalama sonunda \\(a, b, c\\) sayısının eşitsizliği",
+          "C. RegEx yetersizliği",
+          "D. Yığın taşması",
+          "E. Turing kararsızlığı"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 32,
+        question: "Parse-tree cerrahisi yönteminde \"üst alt-ağaçla değiştirme\" işlemi hangi sonuçları üretir?",
+        options: [
+          "A. Her zaman kabul stringleri",
+          "B. \\(uv^i x y^i z\\) veya \\(uxz\\) dizeleri",
+          "C. DFA eşleniği",
+          "D. Turing şerit güncellemesi",
+          "E. Yığın sıfırlama"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 33,
+        question: "\\(v\\) ve \\(y\\) yalnızca tek tip sembol içeriyorsa \\(uv^0 x y^0 z\\) dizesinde görülen sorun ne olur?",
+        options: [
+          "A. Sıra bozulmaz",
+          "B. Bazı sembollerin sayısı azalır, denge bozulur",
+          "C. Dize kısalır ama hala dilde",
+          "D. Konfigürasyon değişmez",
+          "E. Tüm semboller artar"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 34,
+        question: "Non-CFL kanıtlarında \\(p\\) pompalama uzunluğunun en fazla \\(p\\) konumuna sınır getirmesi hangi alt dizeye uygulanır?",
+        options: [
+          "A. \\(u\\)",
+          "B. \\(v\\)",
+          "C. \\(z\\)",
+          "D. \\(vxy\\)",
+          "E. \\(xy\\)"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 35,
+        question: "\\(\\{ww \\mid w \\in \\{0,1\\}^*\\}\\) dilinin non-CFL'liği kanıtında ilk gösterilen şey nedir?",
+        options: [
+          "A. DFA çelişkisi",
+          "B. \\(vxy\\) alt dizisinin orta noktayı içermek zorunda olduğu",
+          "C. Yığın yetersizliği",
+          "D. Tape sonsuzluğu",
+          "E. RegEx yokluğu"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 36,
+        question: "Bağlam-bağımsız olmama kanıtlarında \"Durum 2: \\(v\\) veya \\(y\\) çoklu sembol içerir\" sonucu nedir?",
+        options: [
+          "A. Dize yine dilde kalır",
+          "B. Semboller doğru sırada olmaz, çelişki oluşur",
+          "C. Yığın tekrar dolar",
+          "D. Tape geri sarar",
+          "E. İlave pompalama gerekir"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 37,
+        question: "Non-CFL kanıtlarında hangi teknik bağlam-bağımsız diller için pompalama lemmaya benzer rol oynar?",
+        options: [
+          "A. Myhill-Nerode",
+          "B. Thompson inşası",
+          "C. Parse-tree cerrahisi",
+          "D. LR(1) tablosu",
+          "E. Re yansıması"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 38,
+        question: "Bir Turing makinesinin bant alfabelerini içeren 7'li tanımında kaç özel durum bulunur?",
+        options: [
+          "A. 1",
+          "B. 2 (q_accept, q_reject)",
+          "C. 3",
+          "D. 4",
+          "E. 5"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 39,
+        question: "Turing makinesinin \\(\\delta\\) geçiş fonksiyonu çıktısında hangi hareket sembolleri yer alır?",
+        options: [
+          "A. U, D",
+          "B. L, S, R",
+          "C. L, R",
+          "D. Push, Pop",
+          "E. \\(\\varepsilon\\)"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 40,
+        question: "Turing makinesi \"sonsuz döngü\" durumundaysa dil hangi kategoriye girer?",
+        options: [
+          "A. Kararlaştırılabilir",
+          "B. Sadece tanınabilir (recursively enumerable)",
+          "C. Düzenli",
+          "D. Deterministik bağlam-bağımsız",
+          "E. Non-CFL"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 41,
+        question: "Turing-kararlaştırılabilir dilin diğer yaygın adı nedir?",
+        options: [
+          "A. RE dil",
+          "B. Recursive language",
+          "C. Context-sensitive",
+          "D. DCFL",
+          "E. Regular"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 42,
+        question: "Turing makinesinde \"yapılandırma (configuration)\" üç öğeden hangisini içermez?",
+        options: [
+          "A. Mevcut durum",
+          "B. Şerit içeriği",
+          "C. Baş konum",
+          "D. Yığın tepesi",
+          "E. -"
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 43,
+        question: "Turing makinesi diğer modellere göre hangi bellek avantajına sahiptir?",
+        options: [
+          "A. FIFO kuyruk",
+          "B. Rastgele erişimli yığın",
+          "C. Sonsuz, kısıtlanmamış şerit",
+          "D. Donanımsal kayıt",
+          "E. Sadece sağa hareket"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 44,
+        question: "Turing makinesi için \"kabul\" ne zaman gerçekleşir?",
+        options: [
+          "A. Tüm girdi okunduğunda",
+          "B. Yığın boş olduğunda",
+          "C. Makine \\(q_{accept}\\) durumuna girdiğinde",
+          "D. Bant dolunca",
+          "E. Döngü bitince"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 45,
+        question: "Turing makinesi başta şeridin sol karesine konumlanır ve ... ile başlar.",
+        options: [
+          "A. \\(\\#\\) işareti",
+          "B. Girdi dizisi",
+          "C. Boş semboller",
+          "D. Kabul durumu",
+          "E. Yığın verisi"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 46,
+        question: "Turing makinesi hakkındaki temel gerçek: \"Gerçek bir bilgisayarın yapabildiği her şeyi yapabilir\" ifadesi neyi vurgular?",
+        options: [
+          "A. Donanımsal eşdeğerlik",
+          "B. Turing tamlığı (computational universality)",
+          "C. Determinizm",
+          "D. Belleğin sınırlılığı",
+          "E. RegEx desteği"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 47,
+        question: "Aşağıdaki dizelerden hangisi \\(L=\\{0^{2^k} \\mid k \\geq 0\\}\\) dili tarafından kabul edilir?",
+        options: [
+          "A. \\(\\varepsilon\\)",
+          "B. 0",
+          "C. 000",
+          "D. 00000",
+          "E. 000000"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 48,
+        question: "\"00000000\" (8 sıfır) dizesi için \\(L=\\{0^{2^k} \\mid k \\geq 0\\}\\) makinesinin kararı ne olur?",
+        options: [
+          "A. Kabul",
+          "B. Reddet",
+          "C. Döngüye girer",
+          "D. Boş kalır",
+          "E. Hata verir"
+        ],
+        correctAnswer: "A"
+      },
+      {
+        id: 49,
+        question: "\\(L=\\{w \\# w \\mid w \\in \\{0,1\\}^*\\}\\) dili için aşağıdaki girdilerden hangisi makine tarafından kabul edilir?",
+        options: [
+          "A. \\(\\varepsilon\\)",
+          "B. \\(0 \\# 1\\)",
+          "C. \\(10 \\# 10\\)",
+          "D. \\(01 \\# 10\\)",
+          "E. \\(11 \\#\\)"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 50,
+        question: "Gramer \\(R \\rightarrow XRX \\mid S, S \\rightarrow aTb \\mid bTa, T \\rightarrow XTX \\mid X \\mid \\varepsilon, X \\rightarrow a \\mid b\\) için başlangıç değişkeni nedir?",
+        options: [
+          "A. \\(R\\)",
+          "B. \\(S\\)",
+          "C. \\(T\\)",
+          "D. \\(X\\)",
+          "E. \\(a\\)"
+        ],
+        correctAnswer: "A"
+      }
+    ];
+
+    // Quiz App Component
+    function QuizApp() {
+      const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+      const [selectedAnswer, setSelectedAnswer] = React.useState(null);
+      const [score, setScore] = React.useState({ correct: 0, incorrect: 0 });
+      const [showResult, setShowResult] = React.useState(false);
+      const [isDarkMode, setIsDarkMode] = React.useState(false);
+
+      // Error handling for missing questions
+      if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        console.error("Questions array is not defined or empty!");
+        return (
+          <div className="card p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 className="text-xl font-bold text-red-600">Hata</h2>
+            <p className="text-red-500 mt-2">Soru verisi yüklenemedi. Lütfen konsolu kontrol edin.</p>
+          </div>
+        );
+      }
+
+      const handleAnswerClick = (option) => {
+        if (selectedAnswer) return; // Prevent multiple selections
+        setSelectedAnswer(option);
+
+        if (option.startsWith(questions[currentQuestionIndex].correctAnswer)) {
+          setScore({ ...score, correct: score.correct + 1 });
+        } else {
+          setScore({ ...score, incorrect: score.incorrect + 1 });
+        }
+      };
+
+      const handleNext = () => {
+        setSelectedAnswer(null);
+        if (currentQuestionIndex + 1 < questions.length) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+          setShowResult(true);
+        }
+      };
+
+      const resetQuiz = () => {
+        if (!window.confirm("Testi yeniden başlatmak istediğinize emin misiniz?")) return;
+        setCurrentQuestionIndex(0);
+        setSelectedAnswer(null);
+        setScore({ correct: 0, incorrect: 0 });
+        setShowResult(false);
+      };
+
+      const toggleDarkMode = () => {
+        setIsDarkMode(!isDarkMode);
+      };
+
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+
+      if (showResult) {
+        return (
+          <div className={`card p-6 sm:p-8 max-w-lg w-full mx-auto fade-in ${isDarkMode ? 'dark-mode' : ''}`}>
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-300">Test Sonuçları</h1>
+              <button
+                onClick={toggleDarkMode}
+                className="toggle-button bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white px-3 py-1 rounded-full"
+              >
+                {isDarkMode ? '☀️ Aydınlık Mod' : '🌙 Karanlık Mod'}
+              </button>
+            </div>
+            <div className="text-lg space-y-3">
+              <p><span className="font-semibold">Toplam Çözülen Soru:</span> {score.correct + score.incorrect}</p>
+              <p><span className="font-semibold text-green-600">Doğru Cevaplar:</span> {score.correct}</p>
+              <p><span className="font-semibold text-red-600">Yanlış Cevaplar:</span> {score.incorrect}</p>
+            </div>
+            <button
+              onClick={resetQuiz}
+              className="mt-6 w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Testi Yeniden Başlat
+            </button>
+          </div>
+        );
+      }
+
+      const isCorrect = selectedAnswer && selectedAnswer.startsWith(questions[currentQuestionIndex].correctAnswer);
+      const correctOption = questions[currentQuestionIndex].options.find(
+        option => option.startsWith(questions[currentQuestionIndex].correctAnswer)
+      );
+
+      return (
+        <div className={`card p-6 sm:p-8 max-w-lg w-full mx-auto fade-in ${isDarkMode ? 'dark-mode' : ''}`}>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-blue-800 dark:text-blue-300">Teorik Bilgisayar Bilimi Quiz</h1>
+            <button
+              onClick={toggleDarkMode}
+              className="toggle-button bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white px-3 py-1 rounded-full"
+            >
+              {isDarkMode ? '☀️ Aydınlık Mod' : '🌙 Karanlık Mod'}
+            </button>
+          </div>
+          <div className="mb-4">
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-1">
+              <span>Soru {currentQuestionIndex + 1} / {questions.length}</span>
+              <span>Doğru: {score.correct} | Yanlış: {score.incorrect}</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full progress-bar"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+          <p className="text-lg mb-6 text-gray-800 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: questions[currentQuestionIndex].question }}></p>
+          <div className="space-y-2">
+            {questions[currentQuestionIndex].options.map((option, index) => {
+              const isSelected = selectedAnswer === option;
+              const isCorrectAnswer = option.startsWith(questions[currentQuestionIndex].correctAnswer);
+              let bgClass = 'bg-gray-100 dark:bg-gray-700';
+              if (selectedAnswer) {
+                if (isSelected && !isCorrectAnswer) {
+                  bgClass = 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300';
+                } else if (isCorrectAnswer) {
+                  bgClass = 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300';
+                }
+              }
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerClick(option)}
+                  disabled={selectedAnswer !== null}
+                  className={`option-button block w-full p-3 rounded-md text-left ${bgClass} border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 ${selectedAnswer && 'cursor-not-allowed'} transition-colors duration-300`}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+          {selectedAnswer && (
+            <div className="mt-4">
+              <p className={`text-sm ${isCorrect ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}`}>
+                {isCorrect
+                  ? 'Erii! Helal Lan sna yapıyon Bu işi !'
+                  : `Yanlış Kral Bizde yanlışlık olmaz. Doğru cevap: ${correctOption}`}
+              </p>
+              <button
+                onClick={handleNext}
+                className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+              >
+                {currentQuestionIndex + 1 < questions.length ? 'Sonraki Soru' : 'Sonuçları Göster'}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Render with error handling
+    try {
+      ReactDOM.render(<QuizApp />, document.getElementById('root'));
+    } catch (e) {
+      console.error('Rendering error:', e);
+      document.getElementById('root').innerHTML = `
+        <div className="card p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold text-red-600">Hata</h2>
+          <p className="text-red-500 mt-2">Uygulama yüklenemedi. Lütfen konsolu kontrol edin.</p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
